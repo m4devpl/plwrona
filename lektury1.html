@@ -463,13 +463,21 @@ function checkAnswersRealTime() {
                 rowCorrect = false;
             }
         });
-
+if (userAnswers.size === expectedAnswers.size && [...userAnswers].every(name => expectedAnswers.has(name))) {
+                input.classList.add('correct');
+                input.classList.remove('incorrect');
+            } else {
+                rowCorrect = false;
+                input.classList.add('incorrect');
+                input.classList.remove('correct');
+            }
         if (rowCorrect && correctAnswersCount === inputs.length) {
             correctRows++;
             row.style.backgroundColor = '#ccffcc'; // Podświetlenie całego wiersza na zielono
         } else {
             row.style.backgroundColor = ''; // Usunięcie koloru tła, jeśli wiersz nie jest całkowicie poprawny
         }
+        
     });
 
     const resultText = correctRows >= 5 ? "Zdane" : "Nie zdane";
