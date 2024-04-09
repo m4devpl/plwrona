@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="pl">
+    <html lang="pl">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Interaktywna Tabela z Danymi</title>
+            <style>
+                body {
+                    font-family: 'Arial', sans-serif;
+                    margin: 20px;
+                    background-color: #f4f4f4;
+                    color: #333;
+                }
+                table {
+                    border-collapse: collapse;
+                    width: 100%;
+                    background-color: #fff;
+                    margin-top: 20px;
+                }
+                th, td {
+                    border: 1px solid #ddd;
+                    text-align: left;
+                    padding: 8px;
+                }
+                th {
+                    background-color: #4CAF50;
+                    color: white;
+                }
+                tr:nth-child(even) {
+                    background-color: #f2f2f2;
+                }
+                button {
+                    background-color: #4CAF50;
+                    color: white;
+                    border: none;
+                    padding: 10px 20px;
+                    text-align: center;
+                    text-decoration: none;
+                    display: inline-block;
+                    font-size: 16px;
+                    margin: 4px 2px;
+                    cursor: pointer;
+                }
+                input[type="text"] {
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 8px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+                .correct {
+                    background-color: #ccffcc;
+                }
+                .incorrect {
+                    background-color: #ffcccc;
+                }
+            </style>
+        </head>
+<body>
+
+<h2>Losowe wiersze z tabeli</h2>
+
+<button onclick="fillTable()">Losuj 10 wierszy</button>
+<button onclick="showCorrectAnswers()">Pokaż poprawne odpowiedzi</button>
+
+<table id="randomRows">
+    <thead>
+        <tr>
+            <th>Nazwa</th>
+            <th>Autor</th>
+            <th>Epoka</th>
+            <th>Gatunek</th>
+            <th>Bohaterowie</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Tu pojawią się wylosowane wiersze -->
+    </tbody>
+</table>
+<h1 id="result"></h1>
+
+<script>
+const data = [
+    {
+      "Nazwa": "Pamiętniki",
+      "Autor": "Jan Chryzostom Pasek",
+      "Epoka": "barok",
+      "Gatunek": "pamiętnik",
+      "Bohaterowie": "Narrator"
+    },
+    {
+      "Nazwa": "Skąpiec",
+      "Autor": "Molier",
+      "Epoka": "barok",
+      "Gatunek": "komedia",
+      "Bohaterowie": "Harpagon, Eliza, Walery, Marianna, Anzelm"
+    },
+    {
+      "Nazwa": "Przedwiośnie",
+      "Autor": "Stefan Żeromski",
+      "Epoka": "Dwudziestolecie międzywojenne",
+      "Gatunek": "nowoczesna powieść o dorastaniu",
+      "Bohaterowie": "Cezary Baryka, Seweryn Baryka, Szymon Gajowiec, Hipolit Wielosławski, Laura Kościeniecka"
+    },
+    {
+      "Nazwa": "Makbet",
+      "Autor": "William Szekspir",
+      "Epoka": "epoka elżbietańska",
+      "Gatunek": "dramat szekspirowski",
+      "Bohaterowie": "Makbet, lady Makbet, Banko, Król Dunkan, Malkolm, Lady Makduf"
+    },
+    {
+      "Nazwa": "Inny świat",
+      "Autor": "Gustaw Herling-Grudziński",
+      "Epoka": "Literatura wojenna/okupacyjna",
+      "Gatunek": "powieść autobiograficzna",
+      "Bohaterowie": "Gustaw, Michaił Kostylew, Pamfiłow, Rusto Karinen, Natalia Lwowna"
+    },
+    {
+      "Nazwa": "Zdążyć przed Panem Bogiem",
+      "Autor": "Hanna Kral",
+      "Epoka": "Literatura wojenna/okupacyjna",
+      "Gatunek": "reportaż",
+      "Bohaterowie": "Marek Edelman, Michał Klepfisz, Pola Lifszyc, Luba Blumowa, Mordechaj Anielewicz"
+    },
+    {
+      "Nazwa": "Proszę państwa do gazu",
+      "Autor": "Tadeusz Borowski",
+      "Epoka": "Literatura wojenna/okupacyjna",
+      "Gatunek": "opowiadanie",
+      "Bohaterowie": "Narrator, Henri, Cosway, Andrej, ludzie pracujacy przy rozladunku"
+    },
+    {
+      "Nazwa": "Ludzie, którzy szli",
+      "Autor": "Tadeusz Borowski",
+      "Epoka": "Literatura wojenna/okupacyjna",
+      "Gatunek": "opowiadanie",
+      "Bohaterowie": "Narrator, Żyd, Mirka, Ruda"
+    },
+    {
+      "Nazwa": "Wesele",
+      "Autor": "Stanisław Wyspiański",
+      "Epoka": "Młoda Polska",
+      "Gatunek": "dramat synkretyczny",
+      "Bohaterowie": "Pan Młody, Dziennikarz, Czepiec, Jasiek, Ksiądz"
+    },
+    {
+      "Nazwa": "Hymn do miłości ojczyzny",
+      "Autor": "Ignacy Krasicki",
+      "Epoka": "oświecenie",
+      "Gatunek": "hymn",
+      "Bohaterowie": "-"
+    },
+    {
+      "Nazwa": "Lalka",
+      "Autor": "Bolesław Prus",
+      "Epoka": "pozytywizm",
+      "Gatunek": "powieść dojrzałego realizmu",
+      "Bohaterowie": "Stanisław Wokulski, Izabela Łęcka, Helena Stawska, Ignacy Rzecki, Julian Ochocki"
+    },
+    {
+      "Nazwa": "Gloria victis",
+      "Autor": "Eliza Orzeszkowa",
+      "Epoka": "pozytywizm",
+      "Gatunek": "nowela",
+      "Bohaterowie": "Maryś, Aniela, Jagmin, Romuald Traugutt"
+    },
+    {
+      "Nazwa": "Zbrodnia i kara",
+      "Autor": "Fiodor Dostojewski",
+      "Epoka": "pozytywizm",
+      "Gatunek": "powieść psychologiczna, ",
+      "Bohaterowie": "Rodion Raskolnikow, Sonia Marmieładowa, Poryfiry Petrowicz, Arkadiusz Swidrygajłow, Piotr Łużyn"
+    },
+    {
+      "Nazwa": "Potop",
+      "Autor": "Henryk Sienkiewicz",
+      "Epoka": "pozytywizm",
+      "Gatunek": "powieść historyczna",
+      "Bohaterowie": "Andrzej Kmicic, Oleńka Billewiczówna, Jan Zamoyski, Michał Wołodyjowski, Bogusław Radziwił, Jan Onufry Zagłoba"
+    },
+    {
+      "Nazwa": "Odprawa posłów greckich",
+      "Autor": "Jan Kochanowski",
+      "Epoka": "Renesans",
+      "Gatunek": "dramat historyczny, dramat zbiorowości",
+      "Bohaterowie": "Parys (Aleksander), Priam, Antenor, Helena, Ikeaton"
+    },
+    {
+      "Nazwa": "Kazania sejmowe",
+      "Autor": "Piotr Skarga",
+      "Epoka": "renesans",
+      "Gatunek": "zbiór kazań ",
+      "Bohaterowie": "-"
+    },
+    {
+      "Nazwa": "Konrad Wallenrod",
+      "Autor": "Adam Mickiewicz",
+      "Epoka": "romantyzm",
+      "Gatunek": "poemat ",
+      "Bohaterowie": "Konrad Wallenrod, Pustelnica, Albin, Kiejstut  "
+    },
+    {
+      "Nazwa": "Dziady cz. III",
+      "Autor": "Adam Mickiewicz",
+      "Epoka": "romantyzm",
+      "Gatunek": "dramat romantyczny",
+      "Bohaterowie": "Konrad (Gustaw), Guślarz, Ksiądz Piotr, Jan Rollinson, Doktor, Senator Nowosilcow"
+    },
+    {
+      "Nazwa": "Oda do młodości",
+      "Autor": "Adam Mickiewicz",
+      "Epoka": "romantyzm",
+      "Gatunek": "oda",
+      "Bohaterowie": "-"
+    },
+    {
+      "Nazwa": "Romantyczność",
+      "Autor": "Adam Mickiewicz",
+      "Epoka": "romantyzm",
+      "Gatunek": "ballada",
+      "Bohaterowie": "Karusia, Jasieniek"
+    },
+    {
+      "Nazwa": "Kordian",
+      "Autor": "Juliusz Słowacki",
+      "Epoka": "romantyzm",
+      "Gatunek": "dramat romantyczny",
+      "Bohaterowie": "Kordian, Laura, Wioletta, Papież, Prezes"
+    },
+    {
+      "Nazwa": "Grób Agamemnona",
+      "Autor": "Juliusz Słowacki",
+      "Epoka": "romantyzm",
+      "Gatunek": "liryka pośrednia, opisowa",
+      "Bohaterowie": "Aggamemnon"
+    },
+    {
+      "Nazwa": "Testament mój",
+      "Autor": "Juliusz Słowacki",
+      "Epoka": "romantyzm",
+      "Gatunek": "testament poetycki",
+      "Bohaterowie": "-"
+    },
+    {
+      "Nazwa": "Kwiatki świętego Franciszka z Asyżu",
+      "Autor": "-",
+      "Epoka": "średniowiecze",
+      "Gatunek": "legenda hagiograficzna",
+      "Bohaterowie": "Franciszek, brat Maciej, brat Jan, brat Jakub"
+    },
+    {
+      "Nazwa": "Księgi Rodzaju",
+      "Autor": "-",
+      "Epoka": "starożytność",
+      "Gatunek": "księga historyczna",
+      "Bohaterowie": "Adam, Ewa, Kain, Abel, Abraham"
+    },
+    {
+      "Nazwa": "Księgi Hioba",
+      "Autor": "-",
+      "Epoka": "starożytność",
+      "Gatunek": "biblijny poemat dydaktyczny",
+      "Bohaterowie": "Hiob"
+    },
+    {
+      "Nazwa": "Iliada",
+      "Autor": "Homer",
+      "Epoka": "starożytność",
+      "Gatunek": "epos",
+      "Bohaterowie": "Achilles, Parys, Hektor, Agamemnon, Zeus"
+    },
+    {
+      "Nazwa": "Apokalipsy św. Jana",
+      "Autor": "-",
+      "Epoka": "starożytność",
+      "Gatunek": "-",
+      "Bohaterowie": "-"
+    },
+    {
+      "Nazwa": "Mitologia, część I Grecja",
+      "Autor": "Jan Parandowski",
+      "Epoka": "starożytność",
+      "Gatunek": "mit",
+      "Bohaterowie": "Syzyf, Orfeusz Eurydyka, Tanal, Prometeusz, Pandora"
+    },
+    {
+      "Nazwa": "Antygona",
+      "Autor": "Sofokles",
+      "Epoka": "starożytność",
+      "Gatunek": "tragedia (antyczna)",
+      "Bohaterowie": "Kreon, Ismena, Antygona, Hajmon, Terezjasz"
+    },
+    {
+      "Nazwa": "Lament świętokrzyski",
+      "Autor": "-",
+      "Epoka": "średniowiecze",
+      "Gatunek": "lament",
+      "Bohaterowie": "Matka Boska"
+    },
+    {
+      "Nazwa": "Legenda o św. Aleksym",
+      "Autor": "-",
+      "Epoka": "średniowiecze",
+      "Gatunek": "legenda",
+      "Bohaterowie": "Eufamijan, Aglijas, Aleksy, Famijana"
+    },
+    {
+      "Nazwa": "Rozmowa Mistrza Polikarpa ze Śmiercią",
+      "Autor": "-",
+      "Epoka": "średniowiecze",
+      "Gatunek": "literatura świecka",
+      "Bohaterowie": "Polikarp, Śmierć"
+    },
+    {
+      "Nazwa": "Pieśń o Rolandzie",
+      "Autor": "-",
+      "Epoka": "średniowiecze",
+      "Gatunek": "epos rycerski",
+      "Bohaterowie": "Roland, Karol Wielki, Oliwier, Ganelon, Marsyl"
+    },
+    {
+      "Nazwa": "Bogurodzica",
+      "Autor": "-",
+      "Epoka": "średniowiecze",
+      "Gatunek": "pieśń",
+      "Bohaterowie": "Matka Boża, Jezus Chrystus, Jan Chrzciciel, Bóg, Adam, Człowiek"
+    },
+    {
+      "Nazwa": "Boska Komedia",
+      "Autor": "Dante Alighier",
+      "Epoka": "średniowiecze",
+      "Gatunek": "Poemat",
+      "Bohaterowie": "narrator, Werigiliusz, św. Bernard"
+    },
+    {
+      "Nazwa": "Kronika polska",
+      "Autor": "Gall Anonim",
+      "Epoka": "średniowiecze",
+      "Gatunek": "kronika średniowieczna",
+      "Bohaterowie": "Popiel, Piast, Siemowit, Lstem, Siemomysł"
+    },
+    {
+      "Nazwa": "Dżuma",
+      "Autor": "Albert Camus",
+      "Epoka": "Współczesność",
+      "Gatunek": "powieść współczesna",
+      "Bohaterowie": "Bernard Rieux, Jean Tarrou, Raymond Rambert, Ojciec Paneloux, Joseph Grand, Cottard"
+    },
+    {
+      "Nazwa": "Miejsce",
+      "Autor": "Andrzej Stasiuk",
+      "Epoka": "Współczesność",
+      "Gatunek": "opowiadanie",
+      "Bohaterowie": "stróż, turysta"
+    },
+    {
+      "Nazwa": "Rok 1984",
+      "Autor": "George Orwell",
+      "Epoka": "Współczesność",
+      "Gatunek": "opowiadanie (futurystyczne), antyutopia",
+      "Bohaterowie": "Winston Smith, Julia, O'brien, Charrington, Syme"
+    },
+    {
+      "Nazwa": "Katedra",
+      "Autor": "Jacek Dukaj",
+      "Epoka": "Współczesność",
+      "Gatunek": "opowiadanie fantastyczno-naukowe",
+      "Bohaterowie": "Pierre Lavone, Izmir Predu, Jack Mirton, Gazma, Angii Telesfer"
+    },
+    {
+      "Nazwa": "Raport o stanie wojennym",
+      "Autor": "Marek Nowakowski",
+      "Epoka": "Współczesność",
+      "Gatunek": "opowiadanie",
+      "Bohaterowie": "żołnierz, taksówkarz, starsza pani"
+    },
+    {
+      "Nazwa": "Górą Edek",
+      "Autor": "Marek Nowakowski",
+      "Epoka": "Współczesność",
+      "Gatunek": "opowiadanie",
+      "Bohaterowie": "Edek z forda, Kierowca malucha"
+    },
+    {
+      "Nazwa": "Profesor Andrews w Warszawie",
+      "Autor": "Olga Tokarczuk",
+      "Epoka": "Współczesność",
+      "Gatunek": "opowiadanie psychologiczno-obyczajowe",
+      "Bohaterowie": "Profesor Andrews, Gosia, Narzeczony Gosi, Mieszkańcy Warszawy"
+    },
+    {
+      "Nazwa": "Tango",
+      "Autor": "Sławomir Mrożek",
+      "Epoka": "Współczesność",
+      "Gatunek": "dramat groteskowy",
+      "Bohaterowie": "Eleonora, Stomil, Eugenia, Eugeniusz, Edek, Ala, Artur"
+    }
+];
+
+function getRandomRows(n = 10) {
+    const shuffled = data.sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, n);
+}
+
+function fillTable() {
+    const rows = getRandomRows();
+    const tableBody = document.getElementById('randomRows').getElementsByTagName('tbody')[0];
+    tableBody.innerHTML = '';
+
+    rows.forEach(row => {
+        const tr = document.createElement('tr');
+        const emptyCellsCount = Math.floor(Math.random() * 1) + 3;
+        const emptyCellsIndexes = [];
+        while (emptyCellsIndexes.length < emptyCellsCount) {
+            const rndIndex = Math.floor(Math.random() * 5);
+            if (!emptyCellsIndexes.includes(rndIndex)) {
+                emptyCellsIndexes.push(rndIndex);
+            }
+        }
+
+        Object.entries(row).forEach(([key, value], index) => {
+            const td = document.createElement('td');
+            if (emptyCellsIndexes.includes(index)) {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.setAttribute('data-expected', value);
+                input.addEventListener('input', checkAnswersRealTime); // Dodanie obsługi zdarzenia w czasie rzeczywistym
+                td.appendChild(input);
+            } else {
+                td.textContent = value;
+            }
+            tr.appendChild(td);
+        });
+        tableBody.appendChild(tr);
+    });
+}
+
+
+function checkAnswersRealTime() {
+    const rows = document.getElementById('randomRows').getElementsByTagName('tbody')[0].rows;
+    let correctRows = 0;
+    Array.from(rows).forEach(row => {
+        let rowCorrect = true;
+        let correctAnswersCount = 0;
+        const inputs = row.querySelectorAll('input[type="text"]');
+        
+        inputs.forEach(input => {
+            const expectedAnswers = new Set(input.getAttribute('data-expected').toLowerCase().split(", ").map(name => name.trim()));
+            const userAnswers = input.value.toLowerCase().split(", ").map(name => name.trim());
+
+            let correctCount = 0;
+            userAnswers.forEach(answer => {
+                if (expectedAnswers.has(answer)) {
+                    correctCount++;
+                }
+            });
+
+            if (correctCount >= 5 || (expectedAnswers.size < 5 && correctCount === expectedAnswers.size)) {
+                correctAnswersCount++;
+            } else {
+                rowCorrect = false;
+            }
+        });
+
+        if (rowCorrect && correctAnswersCount === inputs.length) {
+            correctRows++;
+            row.style.backgroundColor = '#ccffcc'; // Podświetlenie całego wiersza na zielono
+        } else {
+            row.style.backgroundColor = ''; // Usunięcie koloru tła, jeśli wiersz nie jest całkowicie poprawny
+        }
+    });
+
+    const resultText = correctRows >= 5 ? "Zdane" : "Nie zdane";
+    document.getElementById('result').textContent = `Wynik: ${correctRows} punkt(ów) - ${resultText}`;
+}
+
+
+function showCorrectAnswers() {
+    const rows = document.getElementById('randomRows').getElementsByTagName('tbody')[0].rows;
+
+    for (const row of rows) {
+        Array.from(row.cells).forEach(cell => {
+            const input = cell.getElementsByTagName('input')[0];
+            if (input) {
+                const correctAnswer = input.getAttribute('data-expected');
+                input.value = correctAnswer; // Wypełnienie pola tekstowego poprawną odpowiedzią
+            }
+        });
+    }
+}
+</script>
+
+</body>
+</html>
